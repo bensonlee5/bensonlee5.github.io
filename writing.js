@@ -1,0 +1,7 @@
+(async()=>{const md=WorkshopMarkdown,el=document.querySelector('#article'),slug=new URLSearchParams(location.search).get('post');
+if(!slug){el.innerHTML='<h1>The notebook</h1><p><a href="/#writing">Browse all writing from the Workshop.</a></p>';return;}
+try{const r=await fetch('https://bensons-workshop.bensonlee5.chatgpt.site/api/posts/'+encodeURIComponent(slug),{credentials:'omit'});if(!r.ok)throw Error();const p=(await r.json()).post;document.title=p.title+' — Benson Lee';
+el.innerHTML=`${p.coverId?`<img class="post-cover" src="https://bensons-workshop.bensonlee5.chatgpt.site/media/${p.coverId}" alt="${md.escape(p.coverAlt)}">`:''}<p class="post-date">BENSON LEE · ${Math.max(1,Math.ceil(p.body.split(/\s+/).length/220))} MIN READ · REPUBLISHED ${new Date(p.publishedAt).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}</p><h1>${md.escape(p.title)}</h1>${p.excerpt?`<p>${md.escape(p.excerpt)}</p>`:''}${md.render(p.body).replaceAll('src="/media/','src="https://bensons-workshop.bensonlee5.chatgpt.site/media/')}`;
+}catch{el.innerHTML='<h1>This page isn’t available.</h1><p>The post may have been returned to drafts. <a href="/#writing">Browse the published writing.</a></p>';}
+document.querySelector('#copy-link').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);document.querySelector('#copy-status').textContent='Link copied.';}catch{document.querySelector('#copy-status').textContent='Copy the address from your browser to share this article.';}});
+})();
